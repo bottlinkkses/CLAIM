@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bonus Claim</title>
+<style>
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #1d1d1d, #292929);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        overflow: hidden;
+    }
+    h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+    input {
+        width: 80%;
+        padding: 15px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 12px;
+        background: #333;
+        color: white;
+        font-size: 1em;
+    }
+    button {
+        padding: 15px 30px;
+        margin-top: 20px;
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        border: none;
+        border-radius: 30px;
+        color: white;
+        font-size: 1.2em;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    button:hover {
+        transform: scale(1.05);
+    }
+    .popup, .processing {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.8);
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        text-align: center;
+    }
+    .popup button {
+        margin-top: 20px;
+    }
+    .success {
+        font-size: 1.5em;
+        color: #00ff88;
+        margin-top: 20px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Bonus Claim</h1>
+<input type="text" id="telegram" placeholder="Enter your Telegram Username">
+<input type="text" id="dice" placeholder="Enter Won Dice Number">
+<button onclick="claim()">Claim</button>
+
+<div class="popup" id="popup">
+    <h2>Congratulations!</h2>
+    <p>You've won 2000₹</p>
+    <p>Claim it by clicking below claim button</p>
+    <p style="font-weight: bold;">(your UPI: Sswaroop670@ybl 🎉)</p>
+    <button onclick="startProcessing()">Claim</button>
+</div>
+
+<div class="processing" id="processing">
+    <h2>Processing...</h2>
+    <p class="success" id="success" style="display:none;">Amount Successfully Sended!<br>Contact Earning Scripter for further details!<br>Thank you.</p>
+</div>
+
+<script>
+function claim() {
+    if (localStorage.getItem('claimed')) {
+        alert('You have already claimed your bonus!');
+    } else {
+        let telegram = document.getElementById('telegram').value.trim();
+        let dice = document.getElementById('dice').value.trim();
+        if (telegram && dice) {
+            document.getElementById('popup').style.display = 'flex';
+        } else {
+            alert('Please fill in all fields!');
+        }
+    }
+}
+
+function startProcessing() {
+    document.getElementById('popup').style.display = 'none';
+    document.getElementById('processing').style.display = 'flex';
+    setTimeout(() => {
+        document.getElementById('processing').querySelector('h2').style.display = 'none';
+        document.getElementById('success').style.display = 'block';
+        localStorage.setItem('claimed', 'true');
+    }, 60000); // 1 minute = 60000 ms
+}
+</script>
+
+</body>
+</html>
