@@ -1,114 +1,274 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bonus Claim</title>
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Betting Site</title>
+  <style>
     body {
-        margin: 0;
-        font-family: 'Poppins', sans-serif;
-        background: linear-gradient(135deg, #1d1d1d, #292929);
-        color: white;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
     }
-    h1 {
-        font-size: 2em;
-        margin-bottom: 20px;
+    .container {
+      max-width: 400px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    input {
-        width: 80%;
-        padding: 15px;
-        margin: 10px 0;
-        border: none;
-        border-radius: 12px;
-        background: #333;
-        color: white;
-        font-size: 1em;
+    h2, h3 {
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
     button {
-        padding: 15px 30px;
-        margin-top: 20px;
-        background: linear-gradient(45deg, #ff416c, #ff4b2b);
-        border: none;
-        border-radius: 30px;
-        color: white;
-        font-size: 1.2em;
-        cursor: pointer;
-        transition: 0.3s;
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
     }
-    button:hover {
-        transform: scale(1.05);
+    .green-btn, .red-btn {
+      width: 48%;
+      font-size: 18px;
+      font-weight: bold;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 5px 1%;
     }
-    .popup, .processing {
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.8);
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        text-align: center;
+    .green-btn {
+      background: green;
     }
-    .popup button {
-        margin-top: 20px;
+    .red-btn {
+      background: red;
     }
-    .success {
-        font-size: 1.5em;
-        color: #00ff88;
-        margin-top: 20px;
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-</style>
+    .history {
+      margin-top: 20px;
+    }
+    .popup {
+      position: fixed;
+      top: 0; left: 0; right:0; bottom:0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    .popup-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 300px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
 
-<h1>Bonus Claim</h1>
-<input type="text" id="telegram" placeholder="Enter your Telegram Username">
-<input type="text" id="dice" placeholder="Enter Won Dice Number">
-<button onclick="claim()">Claim</button>
-
-<div class="popup" id="popup">
-    <h2>Congratulations!</h2>
-    <p>You've won 2000₹</p>
-    <p>Claim it by clicking below claim button</p>
-    <p style="font-weight: bold;">(your UPI: Sswaroop670@ybl 🎉)</p>
-    <button onclick="startProcessing()">Claim</button>
+<div class="container" id="registerPage">
+  <h2>Register</h2>
+  <input type="text" id="regUsername" placeholder="Username" required>
+  <input type="email" id="regEmail" placeholder="Email" required>
+  <input type="text" id="regMobile" placeholder="Mobile Number" required>
+  <input type="password" id="regPassword" placeholder="Password" required>
+  <button onclick="register()">Register</button>
 </div>
 
-<div class="processing" id="processing">
-    <h2>Processing...</h2>
-    <p class="success" id="success" style="display:none;">Amount Successfully Sended!<br>Contact Earning Scripter for further details!<br>Thank you.</p>
+<div class="container" id="loginPage" style="display:none;">
+  <h2>Login</h2>
+  <input type="text" id="loginMobile" placeholder="Mobile Number" required>
+  <input type="password" id="loginPassword" placeholder="Password" required>
+  <button onclick="login()">Login</button>
+</div>
+
+<div class="container" id="dashboard" style="display:none;">
+  <div class="top-bar">
+    <button onclick="withdraw()">Withdraw</button>
+    <h4>Balance: ₹<span id="balance">0</span></h4>
+  </div>
+
+  <h3>Double Your Money!</h3>
+
+  <div id="colorButtons">
+    <button class="green-btn" onclick="selectColor('Green')">GREEN</button>
+    <button class="red-btn" onclick="selectColor('Red')">RED</button>
+  </div>
+
+  <div id="betSection" style="display:none;">
+    <p>Selected Colour: <b id="selectedColor"></b></p>
+    <input type="number" id="betAmount" placeholder="Enter bet amount...">
+    <p>Result: <span id="betResult">-</span></p>
+    <button onclick="placeBet()">BET</button>
+  </div>
+
+  <div class="history">
+    <h3>-- History --</h3>
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<!-- Popup for Claim Bonus -->
+<div class="popup" id="claimPopup" style="display:none;">
+  <div class="popup-content">
+    <h3>Claim ₹50,000 Bonus!</h3>
+    <button onclick="claimBonus()">Claim Now</button>
+  </div>
+</div>
+
+<!-- Popup for Withdraw -->
+<div class="popup" id="withdrawPopup" style="display:none;">
+  <div class="popup-content">
+    <h3>Withdraw</h3>
+    <input type="text" id="upiId" placeholder="Enter UPI ID">
+    <input type="number" id="withdrawAmount" placeholder="Enter Amount">
+    <button onclick="confirmWithdraw()">Withdraw</button>
+  </div>
 </div>
 
 <script>
-function claim() {
-    if (localStorage.getItem('claimed')) {
-        alert('You have already claimed your bonus!');
-    } else {
-        let telegram = document.getElementById('telegram').value.trim();
-        let dice = document.getElementById('dice').value.trim();
-        if (telegram && dice) {
-            document.getElementById('popup').style.display = 'flex';
-        } else {
-            alert('Please fill in all fields!');
-        }
-    }
+let balance = 0;
+let selectedColor = '';
+let claimed = localStorage.getItem('claimed') || false;
+let history = JSON.parse(localStorage.getItem('history') || '[]');
+
+function saveUser(user) {
+  localStorage.setItem('user', JSON.stringify(user));
 }
 
-function startProcessing() {
-    document.getElementById('popup').style.display = 'none';
-    document.getElementById('processing').style.display = 'flex';
-    setTimeout(() => {
-        document.getElementById('processing').querySelector('h2').style.display = 'none';
-        document.getElementById('success').style.display = 'block';
-        localStorage.setItem('claimed', 'true');
-    }, 60000); // 1 minute = 60000 ms
+function getUser() {
+  return JSON.parse(localStorage.getItem('user'));
+}
+
+function register() {
+  let username = document.getElementById('regUsername').value;
+  let email = document.getElementById('regEmail').value;
+  let mobile = document.getElementById('regMobile').value;
+  let password = document.getElementById('regPassword').value;
+
+  if (username && email && mobile && password) {
+    saveUser({ username, email, mobile, password, balance: 0 });
+    alert('Registration successful!');
+    document.getElementById('registerPage').style.display = 'none';
+    document.getElementById('loginPage').style.display = 'block';
+  } else {
+    alert('Fill all fields!');
+  }
+}
+
+function login() {
+  let mobile = document.getElementById('loginMobile').value;
+  let password = document.getElementById('loginPassword').value;
+  let user = getUser();
+
+  if (user && user.mobile == mobile && user.password == password) {
+    balance = user.balance;
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('balance').innerText = balance;
+    if (!claimed) {
+      document.getElementById('claimPopup').style.display = 'flex';
+    }
+    loadHistory();
+  } else {
+    alert('Invalid login details!');
+  }
+}
+
+function claimBonus() {
+  balance += 50000;
+  updateBalance();
+  document.getElementById('claimPopup').style.display = 'none';
+  claimed = true;
+  localStorage.setItem('claimed', true);
+}
+
+function updateBalance() {
+  document.getElementById('balance').innerText = balance;
+  let user = getUser();
+  user.balance = balance;
+  saveUser(user);
+}
+
+function selectColor(color) {
+  selectedColor = color;
+  document.getElementById('selectedColor').innerText = color;
+  document.getElementById('betSection').style.display = 'block';
+}
+
+function placeBet() {
+  let amount = parseInt(document.getElementById('betAmount').value);
+
+  if (isNaN(amount) || amount <= 0) {
+    alert('Enter a valid bet amount!');
+    return;
+  }
+  if (amount > balance) {
+    alert('Not enough balance!');
+    return;
+  }
+
+  document.getElementById('betResult').innerText = 'Wait...';
+  setTimeout(() => {
+    // Always loss logic
+    balance -= amount;
+    updateBalance();
+    document.getElementById('betResult').innerText = 'You Lost!';
+    addHistory(selectedColor, amount, 'Loss');
+  }, 3000);
+}
+
+function addHistory(color, amount, result) {
+  history.push({ color, amount, result });
+  localStorage.setItem('history', JSON.stringify(history));
+  loadHistory();
+}
+
+function loadHistory() {
+  let historyList = document.getElementById('historyList');
+  historyList.innerHTML = '';
+  history.forEach(entry => {
+    let div = document.createElement('div');
+    div.innerHTML = `<b>Selected:</b> ${entry.color} | <b>Amount:</b> ₹${entry.amount} | <b>${entry.result}</b>`;
+    historyList.appendChild(div);
+  });
+}
+
+function withdraw() {
+  if (balance >= 55000) {
+    document.getElementById('withdrawPopup').style.display = 'flex';
+  } else {
+    alert('Minimum ₹55,000 required to withdraw!');
+  }
+}
+
+function confirmWithdraw() {
+  let upi = document.getElementById('upiId').value;
+  let amount = parseInt(document.getElementById('withdrawAmount').value);
+
+  if (!upi || isNaN(amount) || amount <= 0 || amount > balance) {
+    alert('Invalid details or insufficient balance!');
+    return;
+  }
+
+  alert('Withdrawal request sent successfully!');
+  balance -= amount;
+  updateBalance();
+  document.getElementById('withdrawPopup').style.display = 'none';
 }
 </script>
 
