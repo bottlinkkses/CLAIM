@@ -3,31 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Betting Site</title>
+  <title>Betting Site Dark Mode</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      background: #121212;
+      color: #ffffff;
       margin: 0;
       padding: 0;
     }
     .container {
       max-width: 400px;
       margin: 30px auto;
-      background: white;
+      background: #1e1e1e;
       padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.8);
     }
     h2, h3 {
       text-align: center;
+      margin-bottom: 20px;
     }
     input, button {
       width: 100%;
       padding: 10px;
       margin: 8px 0;
       border-radius: 5px;
-      border: 1px solid #ccc;
+      border: 1px solid #555;
+      background: #2c2c2c;
+      color: white;
     }
     button {
       background: #007bff;
@@ -58,22 +62,8 @@
     .history {
       margin-top: 20px;
     }
-    .popup {
-      position: fixed;
-      top: 0; left: 0; right:0; bottom:0;
-      background: rgba(0,0,0,0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-    }
-    .popup-content {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 300px;
-      text-align: center;
+    .popup, #claimPopup, #withdrawPopup {
+      display: none; /* Pura hata diya popup */
     }
   </style>
 </head>
@@ -121,16 +111,8 @@
   </div>
 </div>
 
-<!-- Popup for Claim Bonus -->
-<div class="popup" id="claimPopup" style="display:none;">
-  <div class="popup-content">
-    <h3>Claim ₹50,000 Bonus!</h3>
-    <button onclick="claimBonus()">Claim Now</button>
-  </div>
-</div>
-
-<!-- Popup for Withdraw -->
-<div class="popup" id="withdrawPopup" style="display:none;">
+<!-- Withdraw Popup (hidden) -->
+<div class="popup" id="withdrawPopup">
   <div class="popup-content">
     <h3>Withdraw</h3>
     <input type="text" id="upiId" placeholder="Enter UPI ID">
@@ -142,7 +124,6 @@
 <script>
 let balance = 0;
 let selectedColor = '';
-let claimed = localStorage.getItem('claimed') || false;
 let history = JSON.parse(localStorage.getItem('history') || '[]');
 
 function saveUser(user) {
@@ -175,25 +156,14 @@ function login() {
   let user = getUser();
 
   if (user && user.mobile == mobile && user.password == password) {
-    balance = user.balance;
+    balance = 50000;  // Login ke time pe direct 50k set
+    updateBalance();
     document.getElementById('loginPage').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
-    document.getElementById('balance').innerText = balance;
-    if (!claimed) {
-      document.getElementById('claimPopup').style.display = 'flex';
-    }
     loadHistory();
   } else {
     alert('Invalid login details!');
   }
-}
-
-function claimBonus() {
-  balance = 50000;  // Fixed: balance becomes 50,000 after claim
-  updateBalance();
-  document.getElementById('claimPopup').style.display = 'none';
-  claimed = true;
-  localStorage.setItem('claimed', true);
 }
 
 function updateBalance() {
@@ -223,7 +193,7 @@ function placeBet() {
 
   document.getElementById('betResult').innerText = 'Wait...';
   setTimeout(() => {
-    // Always loss logic
+    // Always loss
     balance -= amount;
     updateBalance();
     document.getElementById('betResult').innerText = 'You Lost!';
@@ -249,25 +219,14 @@ function loadHistory() {
 
 function withdraw() {
   if (balance >= 55000) {
-    document.getElementById('withdrawPopup').style.display = 'flex';
+    alert('Withdraw option coming soon!');
   } else {
     alert('Minimum ₹55,000 required to withdraw!');
   }
 }
 
 function confirmWithdraw() {
-  let upi = document.getElementById('upiId').value;
-  let amount = parseInt(document.getElementById('withdrawAmount').value);
-
-  if (!upi || isNaN(amount) || amount <= 0 || amount > balance) {
-    alert('Invalid details or insufficient balance!');
-    return;
-  }
-
-  alert('Withdrawal request sent successfully!');
-  balance -= amount;
-  updateBalance();
-  document.getElementById('withdrawPopup').style.display = 'none';
+  alert('Withdraw request sent.');
 }
 </script>
 
